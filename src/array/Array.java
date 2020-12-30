@@ -7,9 +7,9 @@ package array;
  * @Description:数组数据结构
  * @data 2020/12/24 16:07
  */
-public class Array {
+public class Array<E> {
 
-    private int[] data;
+    private E[] data;
     private int size;
 
     /**
@@ -20,7 +20,7 @@ public class Array {
      * @Param [capacity]
      **/
     public Array(int capacity) {
-        data = new int[capacity];
+        data = (E[]) new Object[capacity];
         size = 0;
     }
 
@@ -75,13 +75,15 @@ public class Array {
      * @Date 16:33 2020/12/24
      * @Param [index, e]
      **/
-    public void add(int index, int e) {
+    public void add(int index, E e) {
 
-        if (size == data.length) {
-            throw new IllegalArgumentException("add faild.Array is full");
-        }
+
         if (index < 0 || index > size) {
             throw new IllegalArgumentException("add faild.Require index >=0 and index <= size");
+        }
+
+        if (size == data.length) {
+            resize(2 * data.length);
         }
 
         for (int i = size - 1; i >= index; i--) {
@@ -99,7 +101,7 @@ public class Array {
      * @Date 16:35 2020/12/24
      * @Param [e]
      **/
-    public void addLast(int e) {
+    public void addLast(E e) {
         add(size, e);
     }
 
@@ -110,7 +112,7 @@ public class Array {
      * @Date 16:36 2020/12/24
      * @Param [e]
      **/
-    public void addFirst(int e) {
+    public void addFirst(E e) {
         add(0, e);
     }
 
@@ -121,11 +123,33 @@ public class Array {
      * @Date 16:56 2020/12/24
      * @Param [index]
      **/
-    public int get(int index) {
+    public E get(int index) {
         if (index < 0 || index >= size) {
             throw new IllegalArgumentException("get faild.Require index >=0 and index < size");
         }
         return data[index];
+    }
+
+    /**
+        * @Author 小贤
+        * @Description 获取最后一个元素
+        * @Date 19:22 2020/12/25
+        * @Param []
+        * @return E
+        **/
+    public E getLast(){
+        return get(size - 1);
+    }
+
+    /**
+        * @Author 小贤
+        * @Description 获取第一个元素
+        * @Date 19:22 2020/12/25
+        * @Param []
+        * @return E
+        **/
+    public E getFirst(){
+        return get(0);
     }
 
     /**
@@ -135,7 +159,7 @@ public class Array {
      * @Date 16:57 2020/12/24
      * @Param [index, e]
      **/
-    public void set(int index, int e) {
+    public void set(int index, E e) {
         if (index < 0 || index >= size) {
             throw new IllegalArgumentException("set faild.Require index >=0 and index < size");
         }
@@ -149,9 +173,9 @@ public class Array {
      * @Date 17:28 2020/12/24
      * @Param [e]
      **/
-    public boolean contains(int e) {
+    public boolean contains(E e) {
         for (int i = 0; i < size; i++) {
-            if (data[i] == e) {
+            if (data[i].equals(e)) {
                 return true;
             }
         }
@@ -165,9 +189,9 @@ public class Array {
      * @Date 17:30 2020/12/24
      * @Param [e]
      **/
-    public int find(int e) {
+    public int find(E e) {
         for (int i = 0; i < size; i++) {
-            if (data[i] == e) {
+            if (data[i].equals(e)) {
                 return i;
             }
         }
@@ -181,15 +205,19 @@ public class Array {
      * @Date 17:33 2020/12/24
      * @Param [index]
      **/
-    public int remove(int index) {
+    public E remove(int index) {
         if (index < 0 || index >= size) {
             throw new IllegalArgumentException("set faild.Require index >=0 and index < size");
         }
-        int res = data[index];
+        E res = data[index];
         for (int i = index + 1; i < size; i++) {
             data[i - 1] = data[i];
         }
         size--;
+        data[size] = null;
+        if (size == data.length/4 && data.length/2 != 0){
+            resize(data.length/2);
+        }
         return res;
     }
 
@@ -200,7 +228,7 @@ public class Array {
      * @Date 17:39 2020/12/24
      * @Param []
      **/
-    public int removeFirst() {
+    public E removeFirst() {
         return remove(0);
     }
 
@@ -211,7 +239,7 @@ public class Array {
      * @Date 17:40 2020/12/24
      * @Param []
      **/
-    public int removeLast() {
+    public E removeLast() {
         return remove(size - 1);
     }
 
@@ -222,7 +250,7 @@ public class Array {
         * @Param [e]
         * @return void
         **/
-    public void removeElement(int e){
+    public void removeElement(E e){
         int index = find(e);
         if (index != -1){
             remove(index);
@@ -246,8 +274,17 @@ public class Array {
     }
 
 
+    private void resize(int newCapacity){
+        E[] newData = (E[]) new Object[newCapacity];
+        for (int i = 0 ; i < size ; i++){
+            newData[i] = data[i];
+        }
+        data = newData;
+    }
+
+
     public static void main(String[] args) {
-        Array array = new Array();
+        Array<Integer> array = new Array(5);
         for (int i = 0; i < 5; i++) {
             array.addFirst(i);
         }
